@@ -1,0 +1,12 @@
+{
+  "name": "Teatime",
+  "version": "1.0",
+  "description": "notifications and .",
+  "browser_action": {
+    "default_icon": "icon.png",
+    "popup": "popup.html"
+  },
+  "permissions": [
+    "http://api.flickr.com/"
+  ]
+}
