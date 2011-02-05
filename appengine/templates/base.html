@@ -1,0 +1,19 @@
+<html>
+    <head>
+        <title>London Teatime</title>
+        <link href="/css/main.css" type="text/css" rel="Stylesheet"/>
+        
+        <script src="/static/jquery-1.5.min.js" type="text/javascript"></script>
+        <script src="/static/teatime.js" type="text/javascript"></script>
+    </head>
+    <body>
+        <h1>London Teatime</h1>
+        <div id="contents">
+            {% block content %}
+            {% endblock %}
+        </div>
+        <div>
+            <a href="{{ loginorout_url }}">{{ loginorout_text }}</a>
+        </div>
+    </body>
+</html>

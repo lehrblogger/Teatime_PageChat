@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+    
+    {% if convers %}
+        These are your conversations:
+        <ul>
+            {% for conver in convers %}
+                <li><a href="{{ conver }}">{{ conver }}</a></li>
+            {% endfor %} 
+        <ul>
+    {% else %}
+        <p>
+            Browse the Internet and use <a href="/download">the Chrome extension</a> to talk about the websites you visit!
+        </p>
+        <p>
+            A list of those websites will be displayed here on this page so that you can find those conversations easily.
+        </p>
+    {% endif %}
+{% endblock %}
