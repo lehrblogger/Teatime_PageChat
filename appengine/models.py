@@ -37,6 +37,16 @@ class Conver(db.Model):
     def get_watchers(self):
         return [db.get(watcher) for watcher in self.watchers]
 
+    def get_for_url(conver_url):
+        conver = Conver.all().filter('url =', conver_url).get()
+        if not conver:
+            conver = Conver(url=conver_url)
+            conver.put()
+        return conver
+    get_for_url = staticmethod(get_for_url)
+
+
+
 class Message(db.Model):
     author = db.ReferenceProperty(PermaUser)
     text = db.StringProperty(multiline=True)

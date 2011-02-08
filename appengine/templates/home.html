@@ -1,20 +1,26 @@
 {% extends "base.html" %}
 
 {% block content %}
-    
-    {% if convers %}
+    {% if user_conver_urls %}
         These are your conversations:
         <ul>
-            {% for conver in convers %}
-                <li><a href="{{ conver }}">{{ conver }}</a></li>
+            {% for url in user_conver_urls %}
+                <li><a href="/conver?url={{ url|escape }}">{{ url }}</a></li>
             {% endfor %} 
-        <ul>
-    {% else %}
-        <p>
-            Browse the Internet and use <a href="/download">the Chrome extension</a> to talk about the websites you visit!
-        </p>
-        <p>
-            A list of those websites will be displayed here on this page so that you can find those conversations easily.
-        </p>
+        </ul>
     {% endif %}
+    {% if other_conver_urls %}
+        These are conversations your friends are having:
+        <ul>
+            {% for url in other_conver_urls %}
+                <li><a href="/conver?url={{ url|escape }}">{{ url }}</a></li>
+            {% endfor %} 
+        </ul>
+    {% endif %}
+    <p>
+        Browse the Internet and use <a href="/download">the Chrome extension</a> to talk about the websites you visit!
+    </p>
+    <p>
+        A list of those websites will be displayed here on this page so that you can find those conversations easily.
+    </p>
 {% endblock %}

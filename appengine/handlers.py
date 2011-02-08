@@ -16,15 +16,19 @@ import utils
 class MainPage(webapp.RequestHandler):
     def get(self):
         permauser = PermaUser.get_current_permauser()
-        convers = []
-        messages = Message.all().filter('author =', permauser).fetch(1000)
-        for message in messages:
-            conver.append(message.conver.url)
+        other_conver_urls = [str(conver.url) for conver in Conver.all().fetch(1000)]
+        user_conver_urls  = []
+        message_urls = [str(message.conver.url) for message in Message.all().filter('author =', permauser).fetch(1000)]
+        message_urls = list(set(message_urls)) # we only want to go through each url once
+        for message_url in message_urls:
+            other_conver_urls.remove(message_url)
+            user_conver_urls.append( message_url)
         self.response.out.write(template.render(
             os.path.join(os.path.dirname(__file__),
             'templates/home.html'), 
             {
-                'convers': convers,
+                'other_conver_urls': other_conver_urls,
+                'user_conver_urls': user_conver_urls,
                 'loginorout_text': 'Log out',
                 'loginorout_url': users.create_logout_url(self.request.uri)
             }
@@ -43,17 +47,12 @@ class DownloadPage(webapp.RequestHandler):
         ))
 
 
-
 class MessageHandler(webapp.RequestHandler):
     def post(self):
         text = self.request.get('text')
         if text:
-            conver_url = self.request.get('url')
-            conver_url = utils.unescape(conver_url)
-            conver = Conver.all().filter('url =', conver_url).get()
-            if not conver:
-                conver = Conver(url=conver_url)
-                conver.put()
+            conver_url = utils.unescape(self.request.get('url'))
+            conver = Conver.get_for_url(conver_url)
             message = Message(author=PermaUser.get_current_permauser(), text=text, conver=conver)
             message.put()
             self.distribute_message(message)
@@ -79,9 +78,7 @@ class MessageHandler(webapp.RequestHandler):
 class OpenedHandler(webapp.RequestHandler):
     def post(self):
         conver_url = utils.unescape(self.request.get('url'))
-        conver = Conver.all().filter('url =', conver_url).get()
-        if not conver:
-            conver = Conver(url=conver_url)
+        conver = Conver.get_for_url(conver_url)
         permauser = PermaUser.get_current_permauser()
         conver.add_watcher(permauser)
         conver.put()
@@ -89,21 +86,18 @@ class OpenedHandler(webapp.RequestHandler):
 
 class ClosedHandler(webapp.RequestHandler):
     def post(self):
-          conver_url = utils.unescape(self.request.get('url'))
-          conver = Conver.all().filter('url =', conver_url).get()
-          if conver:
-              conver.remove_watcher(permauser) # or maybe we want to keep all watchers forever, so people get notified about what they looked at
-              conver.put()
-    
+        conver_url = utils.unescape(self.request.get('url'))
+        conver = Conver.get_for_url(conver_url)
+        permauser = PermaUser.get_current_permauser()
+        conver.remove_watcher(permauser)
+        conver.put() # or maybe we want to keep all watchers forever, so people get notified about what they looked at
+
 
 class ConverPage(webapp.RequestHandler):
     def get(self):
         permauser = PermaUser.get_current_permauser()
         conver_url = utils.unescape(self.request.get('url'))
-        conver = Conver.all().filter('url =', conver_url).get()
-        if not conver:
-            conver = Conver(url=conver_url)
-            conver.put() 
+        conver = Conver.get_for_url(conver_url)
         messages = Message.all().filter('conver =', conver).order('created').fetch(1000)
         self.response.out.write(template.render(
             os.path.join(os.path.dirname(__file__),

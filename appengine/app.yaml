@@ -1,4 +1,4 @@
-application: london-teatime3
+application: london-teatime2
 version: 1-0
 runtime: python
 api_version: 1
@@ -15,10 +15,13 @@ handlers:
 
 - url: /css
   static_dir: css
-
+    
 - url: /static
   static_dir: static
+  login: required
+  secure: always
     
 - url: /.*
   script: handlers.py
   login: required
+  secure: always
